@@ -11,6 +11,8 @@ Steps:
 3. guildId can be copied by right clicking on the server icon.
 4. token is generated on the discord developer portal for the bot.
 5. Permissions are generated on developer portal, OAuth2 inside Settings. Mark `bot` and `applications.commands`.
+6. Bot should have both Privileged Gateway Intents turned ON, namely, `Presence Intent` and `Server Members Intent`.
+7. Replace `roleId` in `index.js` with your roleId copied from discord.
 
 Data:
 1. Add a file named `discord_handles.txt` which MUST consist of discord tags (format: `name#4355`) each on a separate new line.

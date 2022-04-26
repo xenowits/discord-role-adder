@@ -1,0 +1,13 @@
+Steps:
+1. Create a `config.json` file with the contents below:
+```json
+{
+	"clientId": "123456789012345678",
+	"guildId": "876543210987654321",
+	"token": "your-token-goes-here"
+}
+```
+2. clientId is present in the specific application in https://discord.com/developers/applications.
+3. guildId can be copied by right clicking on the server icon.
+4. token is generated on the discord developer portal for the bot.
+5. Permissions are generated on developer portal, OAuth2 inside Settings. Mark `bot` and `applications.commands`.

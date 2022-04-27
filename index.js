@@ -22,7 +22,8 @@ client.on("interactionCreate", async (interaction) => {
     // Get roleId of already created role by:
     // 1. Enabling Developer Mode in Settings > Advanced > Developer Mode.
     // 2. Right click on a role. Click on Copy ID.
-    let roleId = "968376470609227837";
+    let roleId = "968836554854383656";
+    let adminRoleId = "968824034575941662";
 
     // Get role object from guild. Guild is another name for a discord server.
     var guild = client.guilds.cache.get(guildId);
@@ -40,6 +41,16 @@ client.on("interactionCreate", async (interaction) => {
       await guild.members.fetch({ cache: true, force: true });
     } catch (err) {
       console.error(err);
+    }
+
+    // Restrict only users having a particular admin role to proceed.
+    // First check if the user interacting with the bot has necessary powers.
+    const interactingMember = await guild.members.fetch(interaction.user.id);
+    if (interactingMember.roles.cache.has(adminRoleId)) {
+      console.log("Welcome admin. You can progress now.");
+    } else {
+      await interaction.reply("You don't have the powers.");
+      return;
     }
 
     // Loop through each username
@@ -71,8 +82,8 @@ client.on("interactionCreate", async (interaction) => {
       } else {
         // Add the given role to the user
         member.roles.add(role).catch(console.error);
-        // member.roles.remove(role).catch(console.error);
       }
+      // member.roles.remove(role).catch(console.error);
     }
 
     await interaction.reply("Done!");

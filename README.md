@@ -15,9 +15,7 @@ Steps:
 7. Replace `roleId` in `index.js` with your roleId copied from discord.
 
 Data:
-1. Add a file named `discord_handles.txt` which MUST consist of discord tags (format: `name#4355`) each on a separate new line.
+1. Add a file named `discord_handles.txt` which MUST consist of discord IDs (format: `794727464177096110`) each on a separate new line.
 
 Considerations:
 1. The program fetches all the members of a guild and caches it.
-2. This cache is later used to get the `discord ID` from the `discord tags`.
-3. If we only have `discord ID`s as input, this could have a huge performance boost. Though, not much for smaller guild sizes

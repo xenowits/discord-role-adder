@@ -18,20 +18,17 @@ client.on("interactionCreate", async (interaction) => {
 
   const { commandName } = interaction;
 
-  if (commandName === "add-role") {
+  if (commandName === "role") {
     // Get roleId of already created role by:
     // 1. Enabling Developer Mode in Settings > Advanced > Developer Mode.
     // 2. Right click on a role. Click on Copy ID.
-    let roleId = "968836554854383656";
-    let adminRoleId = "968824034575941662";
+    let roleId = "991686877981704212";
 
     // Get role object from guild. Guild is another name for a discord server.
     var guild = client.guilds.cache.get(guildId);
-    const role = await guild.roles.fetch(roleId);
-    console.log("Rolename:", role.name);
 
-    // Read the list of discord usernames from disk
-    var usernames = fs
+    // Read the list of discord userIds from disk
+    var users = fs
       .readFileSync("./discord_handles.txt", "utf8")
       .toString()
       .split("\n");
@@ -43,50 +40,12 @@ client.on("interactionCreate", async (interaction) => {
       console.error(err);
     }
 
-    // Restrict only users having a particular admin role to proceed.
-    // First check if the user interacting with the bot has necessary powers.
-    const interactingMember = await guild.members.fetch(interaction.user.id);
-    if (interactingMember.roles.cache.has(adminRoleId)) {
-      console.log("Welcome admin. You can progress now.");
-    } else {
-      await interaction.reply("You don't have the powers.");
-      return;
-    }
+    const toAdd = interaction.options.get("input").value === "add";
+    editRoles(users, guild, roleId, toAdd);
 
-    // Loop through each username
-    for (i in usernames) {
-      let name = usernames[i];
-      console.log("name:", name);
-
-      // Get ID from discord usertag. Since, we already cache ALL the members of a guild,
-      // cache miss should not happen.
-      const userId = client.users?.cache.find((u) => u.tag === name)?.id;
-      console.log("UserId:", userId);
-
-      if (userId == null) {
-        console.log("cannot find userId");
-        continue;
-      }
-
-      // Get user object
-      const member = await guild.members.fetch(userId);
-
-      if (member == null) {
-        console.log("couldn't fetch member");
-        continue;
-      }
-
-      // First check if the user already has the role
-      if (member.roles.cache.has(roleId)) {
-        console.log("User already has the role");
-      } else {
-        // Add the given role to the user
-        member.roles.add(role).catch(console.error);
-      }
-      // member.roles.remove(role).catch(console.error);
-    }
-
-    await interaction.reply("Done!");
+    await interaction.reply(
+      `${interaction.options.get("input").value} operation succeeded`
+    );
   } else {
     await interaction.reply("No matching commands");
   }
@@ -94,3 +53,51 @@ client.on("interactionCreate", async (interaction) => {
 
 // Login to Discord with your client's token
 client.login(token);
+
+// toAdd: If true, add roles. If false, remove roles.
+const editRoles = async (users, guild, roleId, toAdd) => {
+  const role = await guild.roles.fetch(roleId);
+
+  // Loop through each userId
+  for (i in users) {
+    var userId;
+
+    // check if it's a discord tag (x#y) or a discord ID
+    if (users[i].includes("#")) {
+      // it's a discord tag
+      // Since, we already cache ALL the members of a guild, cache miss should not happen.
+      userId = client.users?.cache.find((u) => u.tag === name)?.id;
+    } else {
+      // it's a discord id (note: not validating)
+      userId = users[i];
+    }
+
+    console.log("UserId:", userId);
+    if (!userId) {
+      console.log("userId absent or invalid");
+      continue;
+    }
+
+    // Get user object
+    const member = await guild.members.fetch(userId);
+    if (member == null) {
+      console.log("couldn't fetch member");
+      continue;
+    }
+
+    if (toAdd) {
+      console.log("Adding roles");
+      // First check if the user already has the role
+      if (member.roles.cache.has(roleId)) {
+        console.log("User already has the role");
+      } else {
+        // Add the given role to the user
+        member.roles.add(role).catch(console.error);
+      }
+    } else {
+      console.log("Deleting roles");
+      // delete the roles
+      member.roles.remove(role).catch(console.error);
+    }
+  }
+};

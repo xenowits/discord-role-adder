@@ -22,7 +22,7 @@ client.on("interactionCreate", async (interaction) => {
     // Get roleId of already created role by:
     // 1. Enabling Developer Mode in Settings > Advanced > Developer Mode.
     // 2. Right click on a role. Click on Copy ID.
-    let roleId = "991686877981704212";
+    let roleId = "991952417933508718";
 
     // Get role object from guild. Guild is another name for a discord server.
     var guild = client.guilds.cache.get(guildId);

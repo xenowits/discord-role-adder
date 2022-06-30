@@ -66,7 +66,7 @@ const editRoles = async (users, guild, roleId, toAdd) => {
     if (users[i].includes("#")) {
       // it's a discord tag
       // Since, we already cache ALL the members of a guild, cache miss should not happen.
-      userId = client.users?.cache.find((u) => u.tag === name)?.id;
+      userId = client.users?.cache.find((u) => u.tag === users[i])?.id;
     } else {
       // it's a discord id (note: not validating)
       userId = users[i];
@@ -86,7 +86,6 @@ const editRoles = async (users, guild, roleId, toAdd) => {
     }
 
     if (toAdd) {
-      console.log("Adding roles");
       // First check if the user already has the role
       if (member.roles.cache.has(roleId)) {
         console.log("User already has the role");
@@ -94,10 +93,11 @@ const editRoles = async (users, guild, roleId, toAdd) => {
         // Add the given role to the user
         member.roles.add(role).catch(console.error);
       }
+      console.log("role added to", users[i]);
     } else {
-      console.log("Deleting roles");
       // delete the roles
       member.roles.remove(role).catch(console.error);
+      console.log("role deleted for", users[i]);
     }
   }
 };

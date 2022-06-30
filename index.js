@@ -22,14 +22,15 @@ client.on("interactionCreate", async (interaction) => {
     // Get roleId of already created role by:
     // 1. Enabling Developer Mode in Settings > Advanced > Developer Mode.
     // 2. Right click on a role. Click on Copy ID.
-    let roleId = "991952417933508718";
+    let roleId = "992051644298706985";
+    // let roleId = "933433583425683476"; // og proto role
 
     // Get role object from guild. Guild is another name for a discord server.
     var guild = client.guilds.cache.get(guildId);
 
     // Read the list of discord userIds from disk
     var users = fs
-      .readFileSync("./discord_handles.txt", "utf8")
+      .readFileSync("./discord_external.txt", "utf8")
       .toString()
       .split("\n");
 
@@ -41,9 +42,11 @@ client.on("interactionCreate", async (interaction) => {
     }
 
     const toAdd = interaction.options.get("input").value === "add";
-    editRoles(users, guild, roleId, toAdd);
 
-    await interaction.reply(
+    await interaction.deferReply();
+    await editRoles(users, guild, roleId, toAdd);
+
+    await interaction.editReply(
       `${interaction.options.get("input").value} operation succeeded`
     );
   } else {
@@ -56,6 +59,8 @@ client.login(token);
 
 // toAdd: If true, add roles. If false, remove roles.
 const editRoles = async (users, guild, roleId, toAdd) => {
+  var malformedIds = [];
+  var notjoinedIds = [];
   const role = await guild.roles.fetch(roleId);
 
   // Loop through each userId
@@ -63,13 +68,17 @@ const editRoles = async (users, guild, roleId, toAdd) => {
     var userId;
 
     // check if it's a discord tag (x#y) or a discord ID
-    if (users[i].includes("#")) {
+    if (isDiscordTag(users[i])) {
       // it's a discord tag
       // Since, we already cache ALL the members of a guild, cache miss should not happen.
       userId = client.users?.cache.find((u) => u.tag === users[i])?.id;
-    } else {
+    } else if (isDiscordId(users[i])) {
       // it's a discord id (note: not validating)
       userId = users[i];
+    } else {
+      console.log(users[i], "is a bad discord identifier");
+      malformedIds.push(users[i]);
+      continue;
     }
 
     console.log("UserId:", userId);
@@ -79,9 +88,12 @@ const editRoles = async (users, guild, roleId, toAdd) => {
     }
 
     // Get user object
-    const member = await guild.members.fetch(userId);
-    if (member == null) {
-      console.log("couldn't fetch member");
+    let member;
+    try {
+      member = await guild.members.fetch(userId);
+    } catch (err) {
+      notjoinedIds.push(userId);
+      console.log("couldn't fetch", userId, users[i]);
       continue;
     }
 
@@ -100,4 +112,28 @@ const editRoles = async (users, guild, roleId, toAdd) => {
       console.log("role deleted for", users[i]);
     }
   }
+
+  console.log("Malformed IDs", malformedIds);
+  console.log("Nonjoined IDs", notjoinedIds);
 };
+
+const isDiscordTag = (user) => {
+  if (user.includes("#")) {
+    const splits = user.split("#");
+    // valid discord tags consist of both username and usertag
+    return splits[0].length > 0 && splits[1].length > 0;
+  }
+  return false; // can't be a tag without a hash
+};
+
+const isDiscordId = (user) => {
+  return isNumeric(user) && user.length == 18;
+};
+
+function isNumeric(str) {
+  if (typeof str != "string") return false; // we only process strings!
+  return (
+    !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+    !isNaN(parseFloat(str))
+  ); // ...and ensure strings of whitespace fail
+}

@@ -19,4 +19,5 @@ Data:
 
 Considerations:
 1. The program fetches all the members of a guild and caches it.
-2. To add the bot to your server, `https://discordapp.com/api/oauth2/authorize?client_id=<CLIENT_ID>&permissions=8&scope=bot`
+2. Always run `node deploy_commands.js` first. This syncs the bot with discord server.
+3. To add the bot to your server, `https://discordapp.com/api/oauth2/authorize?client_id=<CLIENT_ID>&permissions=8&scope=bot`

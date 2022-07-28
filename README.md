@@ -33,3 +33,7 @@ cp config.sample.json config.json
 ## How to Run:
 1. Run `node deploy_commands.js`.
 2. Run `node index.js`.
+
+## Troubleshooting
+
+1. If you get 403 permission denied errors, make sure the bot has the correct permissions. Reorder roles in server settings. Make sure that the admin role is higher up than the role that you want to assign.

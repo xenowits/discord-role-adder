@@ -29,3 +29,7 @@ cp config.sample.json config.json
 1. The program fetches all the members of a guild and caches it.
 2. To add the bot to your server, `https://discordapp.com/api/oauth2/authorize?client_id=<CLIENT_ID>&permissions=8&scope=bot`.
 3. Always run `node deploy_commands.js` first. This syncs the bot with you discord server, which is specified by `guildId`.
+
+## How to Run:
+1. Run `node deploy_commands.js`.
+2. Run `node index.js`.

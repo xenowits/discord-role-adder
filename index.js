@@ -1,6 +1,6 @@
 // Require the necessary discord.js classes
 const { Client, Intents } = require("discord.js");
-const { token, guildId } = require("./config.json");
+const { guildId, token, roleId } = require("./config.json");
 const fs = require("fs");
 
 // Create a new client instance
@@ -22,15 +22,13 @@ client.on("interactionCreate", async (interaction) => {
     // Get roleId of already created role by:
     // 1. Enabling Developer Mode in Settings > Advanced > Developer Mode.
     // 2. Right click on a role. Click on Copy ID.
-    let roleId = "992051644298706985";
-    // let roleId = "933433583425683476"; // og proto role
 
     // Get role object from guild. Guild is another name for a discord server.
     var guild = client.guilds.cache.get(guildId);
 
     // Read the list of discord userIds from disk
     var users = fs
-      .readFileSync("./discord_external.txt", "utf8")
+      .readFileSync("./discord_handles.txt", "utf8")
       .toString()
       .split("\n");
 
